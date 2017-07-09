@@ -9,44 +9,40 @@ int main()
 	size_t buf_size;
 	pid_t child;
 	unsigned int i;
-	int get_ret, ret_val, status;
+	int status;
 
 	printf("$ ");
 
-	get_ret = getline(&buffer, &buf_size, stdin);
-	if (get_ret == -1)
-		return (1);
-
-	token = strtok(buffer, " ");
-
-	for (i = 0; token != NULL; i++)
+	while (getline(&buffer, &buf_size, stdin) != -1)
 	{
-		argv[i] = token;
-		printf(" token = %s\n", token)
-		token = strtok(NULL, " ");
+		token = strtok(buffer, " \n");
 
-	}
-
-	child = fork();
-	if (child == -1)
-	{
-		perror("ERROR");
-		return (1);
-	}
-	if (child == 0)
-	{
-/* need fix. output -> no such file */
-		ret_val = execve(argv[0], argv, NULL);
-		if (ret_val == -1)
+		for (i = 0; token != NULL; i++)
 		{
-			perror("Error");
+			argv[i] = token;
+			printf("argv[%d] = %s", i, argv[i]);
+			token = strtok(NULL, " \n");
+		}
+
+		argv[i] = NULL;
+
+		child = fork();
+		if (child == -1)
+		{
+			perror("ERROR");
 			return (1);
 		}
-		printf("execve error\n");
-	}
-	else
-	{
-		wait(&status);
+		if (child == 0)
+		{
+			printf("child process before execve\n");
+			execve(argv[0], argv, NULL);
+			perror("Execve Error");
+			return (1);
+		}
+		else
+		{
+			wait(&status);
+		}
 	}
 	return (0);
 }

@@ -13,6 +13,7 @@ int main()
 	if (buffer == NULL)
 		return (1);
 
+/* write() */
 	printf("$ ");
 
 	retval = getline(&buffer, &buf_size, stdin);
